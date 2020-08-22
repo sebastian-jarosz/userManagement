@@ -28,6 +28,7 @@ public class Main {
         view.setAppListener(controller);
         view.setCreateUserListener(controller);
         view.setSaveUserListener(controller);
+        view.setDeleteUserListener(controller);
     }
 
 }

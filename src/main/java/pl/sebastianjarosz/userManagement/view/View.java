@@ -3,10 +3,7 @@ package pl.sebastianjarosz.userManagement.view;
 import pl.sebastianjarosz.userManagement.model.Model;
 import pl.sebastianjarosz.userManagement.model.bean.Person;
 import pl.sebastianjarosz.userManagement.view.event.CreateUserEvent;
-import pl.sebastianjarosz.userManagement.view.listener.AppListener;
-import pl.sebastianjarosz.userManagement.view.listener.CreateUserListener;
-import pl.sebastianjarosz.userManagement.view.listener.PeopleChangedListener;
-import pl.sebastianjarosz.userManagement.view.listener.SaveUserListener;
+import pl.sebastianjarosz.userManagement.view.listener.*;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -30,11 +27,11 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
 
     private AppListener appListener;
     private CreateUserListener createUserListener;
-    private PeopleChangedListener peopleChangedListener;
     private SaveUserListener saveUserListener;
+    private DeleteUserListener deleteUserListener;
 
     public View(Model model) {
-        super("MVC Demo");
+        super("User Management System");
 
         this.model = model;
 
@@ -176,12 +173,12 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
         this.createUserListener = loginListerner;
     }
 
-    public void setPeopleChangedListener(PeopleChangedListener peopleChangedListener) {
-        this.peopleChangedListener = peopleChangedListener;
-    }
-
     public void setSaveUserListener(SaveUserListener saveUserListener) {
         this.saveUserListener = saveUserListener;
+    }
+
+    public void setDeleteUserListener(DeleteUserListener deleteUserListener) {
+        this.deleteUserListener = deleteUserListener;
     }
 
     private JMenuBar createMenu() {
@@ -189,13 +186,17 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
 
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveItem = new JMenuItem("Save");
+        JMenuItem deleteAllItem = new JMenuItem("Delete All");
 
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
+        deleteAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK));
 
         fileMenu.add(saveItem);
+        fileMenu.add(deleteAllItem);
         menuBar.add(fileMenu);
 
         saveItem.addActionListener(e -> fireSaveEvent());
+        deleteAllItem.addActionListener(e -> fireDeleteAllEvent());
 
         return menuBar;
     }
@@ -258,6 +259,12 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
     private void fireSaveEvent() {
         if(saveUserListener != null) {
             saveUserListener.onPersonSave();
+        }
+    }
+
+    private void fireDeleteAllEvent() {
+        if(deleteUserListener != null) {
+            deleteUserListener.onAllPeopleDelete();
         }
     }
 

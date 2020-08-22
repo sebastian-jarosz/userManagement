@@ -34,6 +34,11 @@ public class Model {
         fireDataChanged();
     }
 
+    public void deleteAllPeople() {
+        peopleSet.clear();
+        fireDataChanged();
+    }
+
     public void save() throws SQLException {
         DAOFactory factory = DAOFactory.getDAOFactory(DAOFactory.H2);
         PersonDAO personDAO = factory.getPersonDAO();
