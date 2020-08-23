@@ -43,8 +43,10 @@ public class Model {
         DAOFactory factory = DAOFactory.getDAOFactory(DAOFactory.H2);
         PersonDAO personDAO = factory.getPersonDAO();
 
-        for (Person person : peopleSet) {
+        //All records from DB
+        List<Person> people = personDAO.getPeople();
 
+        for (Person person : peopleSet) {
             if (person.getId() != 0) {
                 // If the person has an ID, the record must
                 // already exist in the database, because we
@@ -55,6 +57,12 @@ public class Model {
                 personDAO.addPerson(new Person(person.getName(), person
                         .getPassword()));
             }
+            people.remove(person);
+        }
+
+        //Remove records removed on screen
+        for (Person person : people) {
+            personDAO.deletePerson(person.getId());
         }
 
         // Load to get the latest IDs for any new people added.

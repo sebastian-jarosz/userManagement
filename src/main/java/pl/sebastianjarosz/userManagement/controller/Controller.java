@@ -55,8 +55,12 @@ public class Controller implements AppListener, CreateUserListener, SaveUserList
     }
 
     @Override
-    public void onPersonDelete() {
-
+    public void onPersonDelete(Person person) {
+        try {
+            model.deletePerson(person);
+        } catch (Exception e) {
+            view.showError("Error deleting person");
+        }
     }
 
     @Override

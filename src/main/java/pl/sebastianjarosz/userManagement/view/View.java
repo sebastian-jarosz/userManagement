@@ -22,6 +22,7 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
     private JPasswordField passwordField;
     private JPasswordField repeatPasswordField;
     private JButton createUserButton;
+    private JButton deleteUserButton;
     private DefaultListModel<Person> userListModel;
     private JList<Person> userList;
 
@@ -40,7 +41,8 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
         nameField = new JTextField(10);
         passwordField = new JPasswordField(10);
         repeatPasswordField = new JPasswordField(10);
-        createUserButton = new JButton("Create User");
+        createUserButton = new JButton("Create user");
+        deleteUserButton = new JButton("Delete selected user");
         userListModel = new DefaultListModel<>();
         userList = new JList<>(userListModel);
 
@@ -144,7 +146,18 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
 
         add(new JScrollPane(userList), gBC);
 
+        //To specify where button should go
+        gBC.anchor = GridBagConstraints.FIRST_LINE_START;
+        gBC.gridx = 1;
+        gBC.gridy = 6;
+        gBC.weightx = 1;
+        gBC.weighty = 100;
+        gBC.fill = GridBagConstraints.NONE;
+
+        add(deleteUserButton, gBC);
+
         createUserButton.addActionListener(this);
+        deleteUserButton.addActionListener(e -> fireDeleteUserEvent());
 
         //Examples - usage of SINGLETON object methods
         addWindowListener(new WindowAdapter() {
@@ -265,6 +278,13 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
     private void fireDeleteAllEvent() {
         if(deleteUserListener != null) {
             deleteUserListener.onAllPeopleDelete();
+        }
+    }
+
+    private void fireDeleteUserEvent() {
+        Person selectedPerson = userList.getSelectedValue();
+        if(deleteUserListener != null) {
+            deleteUserListener.onPersonDelete(selectedPerson);
         }
     }
 
