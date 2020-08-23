@@ -23,6 +23,7 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
     private JPasswordField repeatPasswordField;
     private JButton createUserButton;
     private JButton deleteUserButton;
+    private JButton editUserButton;
     private DefaultListModel<Person> userListModel;
     private JList<Person> userList;
 
@@ -43,6 +44,7 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
         repeatPasswordField = new JPasswordField(10);
         createUserButton = new JButton("Create user");
         deleteUserButton = new JButton("Delete selected user");
+        editUserButton = new JButton("Edit selected user");
         userListModel = new DefaultListModel<>();
         userList = new JList<>(userListModel);
 
@@ -154,10 +156,21 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
         gBC.weighty = 100;
         gBC.fill = GridBagConstraints.NONE;
 
+        add(editUserButton, gBC);
+
+        //To specify where button should go
+        gBC.anchor = GridBagConstraints.FIRST_LINE_START;
+        gBC.gridx = 1;
+        gBC.gridy = 7;
+        gBC.weightx = 1;
+        gBC.weighty = 100;
+        gBC.fill = GridBagConstraints.NONE;
+
         add(deleteUserButton, gBC);
 
         createUserButton.addActionListener(this);
         deleteUserButton.addActionListener(e -> fireDeleteUserEvent());
+        editUserButton.addActionListener(e -> fireUpdateUserEvent());
 
         //Examples - usage of SINGLETON object methods
         addWindowListener(new WindowAdapter() {
@@ -214,6 +227,7 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
         return menuBar;
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         String password = passwordField.getText();
         String repeatPassword = repeatPasswordField.getText();
@@ -265,7 +279,13 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
 
     private void fireCreateUserEvent(CreateUserEvent createUserEvent) {
         if(createUserListener != null) {
-            createUserListener.onUserCreated(createUserEvent);
+            if(userList.isEnabled()) {
+                createUserListener.onUserCreated(createUserEvent);
+            } else {
+                Person selectedPerson = getSelectedPerson();
+                createUserListener.onUserUpdate(createUserEvent, selectedPerson);
+                userList.setEnabled(Boolean.TRUE);
+            }
         }
     }
 
@@ -282,10 +302,32 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
     }
 
     private void fireDeleteUserEvent() {
-        Person selectedPerson = userList.getSelectedValue();
-        if(deleteUserListener != null) {
+        Person selectedPerson = getSelectedPerson();
+
+        if(deleteUserListener != null && selectedPerson != null) {
             deleteUserListener.onPersonDelete(selectedPerson);
         }
     }
+
+    private void fireUpdateUserEvent() {
+        Person selectedPerson = getSelectedPerson();
+
+        if(selectedPerson != null) {
+            nameField.setText(selectedPerson.getName());
+            passwordField.setText(selectedPerson.getPassword());
+            repeatPasswordField.setText(selectedPerson.getPassword());
+            userList.setEnabled(Boolean.FALSE);
+        }
+    }
+
+    private Person getSelectedPerson() {
+        Person selectedPerson = userList.getSelectedValue();
+        if(selectedPerson == null) {
+            showError("You need to select user first");
+        }
+
+        return selectedPerson;
+    }
+
 
 }

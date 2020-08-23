@@ -26,6 +26,13 @@ public class Controller implements AppListener, CreateUserListener, SaveUserList
     }
 
     @Override
+    public void onUserUpdate(CreateUserEvent createUserEvent, Person person) {
+        person.setName(createUserEvent.getName());
+        person.setPassword(createUserEvent.getPassword());
+        model.updatePerson();
+    }
+
+    @Override
     public void onOpen() {
         try {
             Database.getInstance().connectDatabase();

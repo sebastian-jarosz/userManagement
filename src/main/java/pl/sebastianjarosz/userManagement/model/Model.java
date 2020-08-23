@@ -29,6 +29,10 @@ public class Model {
         fireDataChanged();
     }
 
+    public void updatePerson() {
+        fireDataChanged();
+    }
+
     public void deletePerson(Person person) {
         peopleSet.remove(person);
         fireDataChanged();
@@ -53,11 +57,14 @@ public class Model {
                 // get the IDs from the database autoincrement
                 // ID column.
                 personDAO.updatePerson(person);
+
+                people.stream()
+                        .filter(p -> p.getId() == person.getId())
+                        .findFirst().ifPresent(people::remove);
             } else {
                 personDAO.addPerson(new Person(person.getName(), person
                         .getPassword()));
             }
-            people.remove(person);
         }
 
         //Remove records removed on screen
@@ -80,7 +87,7 @@ public class Model {
     }
 
     public void fireDataChanged() {
-        if(peopleChangedListener != null) {
+        if (peopleChangedListener != null) {
             peopleChangedListener.onPeopleChange();
         }
     }
