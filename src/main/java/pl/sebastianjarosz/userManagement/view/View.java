@@ -285,17 +285,28 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
                 Person selectedPerson = getSelectedPerson();
                 createUserListener.onUserUpdate(createUserEvent, selectedPerson);
                 userList.setEnabled(Boolean.TRUE);
+                createUserButton.setText("Create user");
             }
         }
     }
 
     private void fireSaveEvent() {
+        if(!userList.isEnabled()) {
+            showError("You are in update mode. Finish editing user before next change.");
+            return;
+        }
+
         if(saveUserListener != null) {
             saveUserListener.onPersonSave();
         }
     }
 
     private void fireDeleteAllEvent() {
+        if(!userList.isEnabled()) {
+            showError("You are in update mode. Finish editing user before next change.");
+            return;
+        }
+
         if(deleteUserListener != null) {
             deleteUserListener.onAllPeopleDelete();
         }
@@ -303,6 +314,11 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
 
     private void fireDeleteUserEvent() {
         Person selectedPerson = getSelectedPerson();
+
+        if(!userList.isEnabled()) {
+            showError("You are in update mode. Finish editing user before next change.");
+            return;
+        }
 
         if(deleteUserListener != null && selectedPerson != null) {
             deleteUserListener.onPersonDelete(selectedPerson);
@@ -317,6 +333,7 @@ public class View extends JFrame implements ActionListener, PeopleChangedListene
             passwordField.setText(selectedPerson.getPassword());
             repeatPasswordField.setText(selectedPerson.getPassword());
             userList.setEnabled(Boolean.FALSE);
+            createUserButton.setText("Update user");
         }
     }
 
